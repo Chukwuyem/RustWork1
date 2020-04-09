@@ -1,5 +1,5 @@
 #[derive(Default)]
-
+//# [derive(Copy)]
 pub struct Node {
 	data: i32,
 	left: Option<Box<Node>>,
@@ -7,6 +7,14 @@ pub struct Node {
 }
 //option is used when the property could either be a type or None.
 //if just `left: Node`, rust will panic because `recursive without indirection`
+
+//impl Copy for Node { }
+
+// impl Clone for Node {
+// 	fn clone(&self) -> Node {
+// 		*self
+// 	}
+// }
 
 impl Node {
 	fn print_data(&self) -> i32 {
@@ -31,39 +39,19 @@ impl Node {
        self.right = new_right
 	}
 
-	// fn return_left(&self) -> Option<&Self> {
-	// 	if let Some(left) = self.left.as_ref() {
-	// 		Some(&**left)
-	// 	}
-	// 	else {
-	// 		None
-	// 	}
-	// }
+	fn swap_childs(&mut self) -> () {
+		std::mem::swap(&mut self.left, &mut self.right);
+	}
 
-
-
-	// fn return_right(&self) -> Node {
-	// 	self.right
-	// }
-
-	// fn add_right(&self, new_right: Node) {
-	// 	self.right = new_right
-	// }
 }
 
-// fn new_node(new_data: i32) -> Node {
-// 	Node {data: new_data, left: None, right: None}
-// }
+fn get_data(a_node: &Node) -> i32 {
+	a_node.data
+}
 
-// fn new_node(new_data: i32, new_left: Node, new_right: Node) -> Node {
-// 	Node {data: new_data, left: new_left, right: new_right}
-// }
 
 fn main() {
     println!("Hello, world!");
-
-    // let node4 = new_node(4);
-    // let node3 = new_node(3, node4);
 
     let node4 = Node {data: 4, ..Default::default() };
 
@@ -74,12 +62,23 @@ fn main() {
     node3.set_right(Some(Box::new(node5)));
 
     // We have a tree!?
-    println!("node3 val is {}", node3.print_data());
-    let ld = node3.left.unwrap().data;
-    println!("node3 left val is {}", ld);
-    println!("node3 right val is {}", node3.right.unwrap().print_data());
+    println!("node3 val is {}", get_data(&node3));
 
-    // Swap left and right values?
-    // let tmp = &node3.left.unwrap().data;
-    // node3.right.unwrap().data = tmp;
+    let left = get_data(node3.left.as_ref().unwrap());
+    //difference between & and as_ref() ==> &Option<T> vs Option<&T>
+    println!("node3 left val is {}", left);
+
+    let right = get_data(node3.right.as_ref().unwrap());
+    println!("node3 right val is {}", right);
+
+    node3.swap_childs();
+    println!("nodes have been swapped");
+
+    let left = get_data(node3.left.as_ref().unwrap());
+    //difference between & and as_ref() ==> &Option<T> vs Option<&T>
+    println!("node3 new left val is {}", left);
+
+    let right = get_data(node3.right.as_ref().unwrap());
+    println!("node3 new right val is {}", right);
+
 }
