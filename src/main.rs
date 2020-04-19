@@ -1,3 +1,4 @@
+
 #[derive(Default)]
 //# [derive(Copy)]
 pub struct Node {
@@ -8,13 +9,6 @@ pub struct Node {
 //option is used when the property could either be a type or None.
 //if just `left: Node`, rust will panic because `recursive without indirection`
 
-//impl Copy for Node { }
-
-// impl Clone for Node {
-// 	fn clone(&self) -> Node {
-// 		*self
-// 	}
-// }
 
 impl Node {
 	fn print_data(&self) -> i32 {
@@ -50,6 +44,26 @@ fn get_data(a_node: &Node) -> i32 {
 }
 
 
+fn insert_at_root(root_node: &mut Box<Node>, new_node: Node) { //not reference because root_node will be mutated
+	if root_node.data > new_node.data { // value less than root
+		if let Some(left) = root_node.left.as_mut() { //as_mut converts a reference to a mutable ref
+			insert_at_root(&mut *left, new_node); // *left is a way to downcast box, i.e. *left = T from Box<T>
+		}
+		else {
+			root_node.set_left(Some(Box::new(new_node)));
+		}
+	}
+	else if root_node.data < new_node.data {
+		if let Some(right) = root_node.right.as_mut() {
+			insert_at_root(&mut *right, new_node);
+		}
+		else {
+			root_node.set_right(Some(Box::new(new_node)));
+		}
+	}
+}
+
+
 fn main() {
     println!("Hello, world!");
 
@@ -81,4 +95,22 @@ fn main() {
     let right = get_data(node3.right.as_ref().unwrap());
     println!("node3 new right val is {}", right);
 
+
+    //testing the insert function
+    let mut root = Box::new(Node {data: 13, ..Default::default() });
+
+    let new_node_1 = Node {data: 5, ..Default::default() };
+
+    let new_node_2 = Node {data: 4, ..Default::default() };
+
+    let new_node_3 = Node {data: 3, ..Default::default() };
+
+    insert_at_root(&mut root, new_node_1);
+    insert_at_root(&mut root, new_node_2);
+    insert_at_root(&mut root, new_node_3);
+
+
+    println!("root returned was {:?}", get_data(&root) );
+    //println!("root new left is {:?}", get_data(root.left.as_ref().unwrap()));
+    //println!("root new right is {:?}", get_data(root.right.as_ref().unwrap()));
 }
