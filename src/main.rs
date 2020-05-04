@@ -1,4 +1,7 @@
 
+use std::io;
+use std::io::Write;
+
 #[derive(Default)]
 //# [derive(Copy)]
 pub struct Node {
@@ -63,6 +66,16 @@ fn insert_at_root(root_node: &mut Box<Node>, new_node: Node) { //not reference b
 	}
 }
 
+fn inorder(root_node: &Box<Node>) {
+	if let Some(left) = root_node.left.as_ref() {
+		inorder(&*left);
+	}
+	print!("{:?} ", root_node.data);
+	if let Some(right) = root_node.right.as_ref() {
+		inorder(&*right);
+	}
+}
+
 
 fn main() {
     println!("Hello, world!");
@@ -72,45 +85,32 @@ fn main() {
     let mut node3 = Node {data: -3, ..Default::default() };
     node3.set_left(Some(Box::new(node4)));
 
-    let node5 = Node {data: 5, ..Default::default() };
-    node3.set_right(Some(Box::new(node5)));
-
-    // We have a tree!?
-    println!("node3 val is {}", get_data(&node3));
-
     let left = get_data(node3.left.as_ref().unwrap());
     //difference between & and as_ref() ==> &Option<T> vs Option<&T>
     println!("node3 left val is {}", left);
 
-    let right = get_data(node3.right.as_ref().unwrap());
-    println!("node3 right val is {}", right);
-
-    node3.swap_childs();
-    println!("nodes have been swapped");
-
-    let left = get_data(node3.left.as_ref().unwrap());
-    //difference between & and as_ref() ==> &Option<T> vs Option<&T>
-    println!("node3 new left val is {}", left);
-
-    let right = get_data(node3.right.as_ref().unwrap());
-    println!("node3 new right val is {}", right);
-
 
     //testing the insert function
-    let mut root = Box::new(Node {data: 13, ..Default::default() });
+    let mut root = Box::new(Node {data: 6, ..Default::default() });
 
-    let new_node_1 = Node {data: 5, ..Default::default() };
+    let new_node_1 = Node {data: 9, ..Default::default() };
 
-    let new_node_2 = Node {data: 4, ..Default::default() };
+    let new_node_2 = Node {data: 2, ..Default::default() };
 
-    let new_node_3 = Node {data: 3, ..Default::default() };
+    let new_node_3 = Node {data: 11, ..Default::default() };
+
+    let new_node_4 = Node {data: 5, ..Default::default() };
 
     insert_at_root(&mut root, new_node_1);
     insert_at_root(&mut root, new_node_2);
     insert_at_root(&mut root, new_node_3);
+    insert_at_root(&mut root, new_node_4);
+
+    println!("running inorder traversal");
+    inorder(&root);
+	io::stdout().flush().unwrap();
+	println!(""); //newline
 
 
     println!("root returned was {:?}", get_data(&root) );
-    //println!("root new left is {:?}", get_data(root.left.as_ref().unwrap()));
-    //println!("root new right is {:?}", get_data(root.right.as_ref().unwrap()));
 }
